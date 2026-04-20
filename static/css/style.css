@@ -1,0 +1,10 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; background: #0b0b0b; color: #eee; font-family: system-ui, sans-serif; }
+#no-webgpu { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; padding: 2rem; }
+#app { display: flex; flex-direction: column; height: 100vh; }
+header { display: flex; justify-content: space-between; align-items: baseline; padding: 0.5rem 1rem; background: #111; border-bottom: 1px solid #222; }
+header h1 { font-size: 1rem; margin: 0; font-weight: 600; }
+#gpu-adapter-name { font-family: monospace; font-size: 0.75rem; color: #888; }
+main { flex: 1; display: flex; overflow: hidden; }
+#canvas-container { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; }
+#sidebar { width: 320px; background: #111; border-left: 1px solid #222; padding: 1rem; overflow-y: auto; }

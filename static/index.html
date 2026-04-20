@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Life — WebGPU</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div id="no-webgpu" style="display:none;">
+        <p>WebGPU not supported. Use Chrome 113+, Edge 113+, or Firefox Nightly with <code>dom.webgpu.enabled</code>.</p>
+    </div>
+    <div id="app">
+        <header>
+            <h1>Game of Life</h1>
+            <span id="gpu-adapter-name">detecting GPU…</span>
+        </header>
+        <main>
+            <div id="canvas-container"></div>
+            <aside id="sidebar"></aside>
+        </main>
+    </div>
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>
