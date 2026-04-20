@@ -32,6 +32,17 @@ async function init() {
     const renderer = new Renderer(container, device, solver);
     const interaction = new Interaction(renderer.canvas, solver);
 
+    // Temporary keyboard wiring (removed when UI is wired in Task 11)
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+        if (e.key === 'g') { interaction.mode = 'stamp'; interaction.activeStamp = 'gosperGliderGun';
+            console.log('Stamp mode: gosperGliderGun'); }
+        if (e.key === 's') { interaction.mode = 'stamp'; interaction.activeStamp = 'glider';
+            console.log('Stamp mode: glider'); }
+        if (e.key === 'b') { interaction.mode = 'brush';
+            console.log('Brush mode'); }
+    });
+
     // Seed with a single glider near the top-left for visual verification.
     const seed = new Int32Array(numX * numY);
     const gi = Math.floor(numX * 0.1);
