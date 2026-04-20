@@ -1,5 +1,6 @@
 import { Solver } from './solver.js';
 import { Renderer } from './renderer.js';
+import { Interaction } from './interaction.js';
 import { STAMPS } from './stamps.js';
 
 async function init() {
@@ -29,6 +30,7 @@ async function init() {
 
     const solver = await Solver.create(device, numX, numY);
     const renderer = new Renderer(container, device, solver);
+    const interaction = new Interaction(renderer.canvas, solver);
 
     // Seed with a single glider near the top-left for visual verification.
     const seed = new Int32Array(numX * numY);
