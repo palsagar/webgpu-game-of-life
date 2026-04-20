@@ -13,7 +13,10 @@
     <div id="app">
         <header>
             <h1>Game of Life</h1>
-            <span id="gpu-adapter-name">detecting GPU…</span>
+            <div class="header-right">
+                <button id="btn-guide">Guide</button>
+                <span id="gpu-adapter-name">detecting GPU…</span>
+            </div>
         </header>
         <main>
             <div id="canvas-container"></div>
@@ -88,6 +91,80 @@
         </aside>
         </main>
     </div>
+
+    <div id="device-lost-banner" style="display:none;">GPU device lost — reload the page.</div>
+
+    <div id="perf-hud"></div>
+
+    <div id="welcome-overlay">
+        <div class="welcome-card">
+            <h2>Game of Life</h2>
+            <p>A real-time Game of Life simulator running entirely on your GPU via WebGPU.
+               Paint cells to seed patterns, drop famous stamps, and change the rules live.</p>
+            <p><a href="#" id="open-guide-from-welcome">What am I looking at?</a></p>
+            <button id="start-sim-btn">Start</button>
+        </div>
+    </div>
+
+    <div id="guide-overlay">
+        <div id="guide-panel">
+            <div class="guide-header">
+                <h2>Guide</h2>
+                <button id="guide-close" aria-label="Close">×</button>
+            </div>
+            <div class="guide-section">
+                <div class="guide-section-header">The Game of Life</div>
+                <div class="guide-section-body">
+                    <p>Conway's Life is a two-state cellular automaton on an infinite grid. Each cell
+                       looks at its 8 Moore-neighborhood neighbors and follows two rules: <strong>birth</strong>
+                       (a dead cell comes alive when it has exactly the right number of alive neighbors) and
+                       <strong>survival</strong> (an alive cell stays alive with the right neighbor count).</p>
+                    <p>Classical Life uses B3/S23: born with 3 neighbors, survives with 2 or 3. This is
+                       Turing-complete — every computation possible in principle expressible as a pattern
+                       of living cells.</p>
+                </div>
+            </div>
+            <div class="guide-section">
+                <div class="guide-section-header">Life-like rules (B/S notation)</div>
+                <div class="guide-section-body">
+                    <p>Life-like rules share Conway's structure (two states, Moore neighborhood, outer totalistic)
+                       but vary the neighbor counts that trigger birth and survival. Named rules in the dropdown:</p>
+                    <ul>
+                        <li><strong>HighLife</strong> (B36/S23) — like Life but includes a self-replicator.</li>
+                        <li><strong>Seeds</strong> (B2/S) — every live cell dies; explosive growth from any seed.</li>
+                        <li><strong>Day &amp; Night</strong> — symmetric under state inversion.</li>
+                        <li><strong>Life Without Death</strong> — once born, never dies; grows forever.</li>
+                        <li><strong>Maze / Mazectric</strong> — stabilizes into maze-like patterns.</li>
+                    </ul>
+                    <p>Toggle any checkbox to leave a named rule and explore custom regimes.</p>
+                </div>
+            </div>
+            <div class="guide-section">
+                <div class="guide-section-header">Famous patterns</div>
+                <div class="guide-section-body">
+                    <p><strong>Spaceships</strong> (glider, LWSS, MWSS, HWSS) translate across the grid forever.
+                       <strong>Oscillators</strong> (blinker, toad, pulsar, pentadecathlon) repeat with periods
+                       2, 2, 3, 15. <strong>Still lifes</strong> (block, beehive, loaf, boat) are fixed points.
+                       <strong>Guns</strong> emit spaceships periodically — the Gosper glider gun fires every
+                       30 generations. <strong>Methuselahs</strong> (R-pentomino, acorn, diehard) are tiny seeds
+                       that evolve for hundreds of generations before stabilizing.</p>
+                </div>
+            </div>
+            <div class="guide-section">
+                <div class="guide-section-header">Controls</div>
+                <div class="guide-section-body">
+                    <p><strong>Mouse.</strong> In Brush mode: left-drag paints alive, shift+drag or right-drag
+                       erases. In Stamp mode: single-click drops the active stamp, right-click clears its
+                       footprint.</p>
+                    <p><strong>Keyboard.</strong> P pause · M step · R reset scene · C clear · B toggle boundary ·
+                       [ / ] brush radius.</p>
+                    <p><strong>Rendering.</strong> The colormap maps cell age to a gradient. Fresh births glow green,
+                       long-lived stable structures turn white, and dying cells leave a fading comet tail.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="/js/main.js"></script>
 </body>
 </html>

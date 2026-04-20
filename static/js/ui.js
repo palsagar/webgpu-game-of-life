@@ -19,6 +19,8 @@ export class UI {
         this._bindPlayback();
         this._bindGrid();
         this._bindDisplay();
+        this._bindKeyboard();
+        this._bindGuideModal();
     }
 
     // ---- Rule Editor ----
@@ -238,5 +240,51 @@ export class UI {
             this.substepsPerFrame = parseInt(sub.value, 10);
             document.getElementById('val-substeps').textContent = sub.value;
         });
+    }
+
+    _bindKeyboard() {
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            switch (e.key) {
+                case 'p': this._togglePause(); break;
+                case 'm': this._stepOnce(); break;
+                case 'r': this._reset(); break;
+                case 'c': this._clear(); break;
+                case 'b': {
+                    const sel = document.getElementById('boundary-select');
+                    sel.value = sel.value === '0' ? '1' : '0';
+                    this.solver.setParams({ boundary: parseInt(sel.value, 10) });
+                    break;
+                }
+                case '[': this._nudgeBrush(-1); break;
+                case ']': this._nudgeBrush(+1); break;
+            }
+        });
+    }
+
+    _nudgeBrush(delta) {
+        const slider = document.getElementById('slider-brush');
+        const next = Math.max(1, Math.min(30, parseInt(slider.value, 10) + delta));
+        slider.value = next;
+        this.interaction.brushRadius = next;
+        document.getElementById('val-brush').textContent = String(next);
+    }
+
+    _bindGuideModal() {
+        const overlay = document.getElementById('guide-overlay');
+        const open = () => overlay.classList.add('guide-visible');
+        const close = () => overlay.classList.remove('guide-visible');
+        document.getElementById('btn-guide').addEventListener('click', open);
+        document.getElementById('guide-close').addEventListener('click', close);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+        overlay.querySelectorAll('.guide-section-header').forEach(h => {
+            h.addEventListener('click', () => {
+                const s = h.parentElement;
+                const wasOpen = s.classList.contains('guide-section-open');
+                overlay.querySelectorAll('.guide-section').forEach(x => x.classList.remove('guide-section-open'));
+                if (!wasOpen) s.classList.add('guide-section-open');
+            });
+        });
+        this.openGuide = open;
     }
 }
