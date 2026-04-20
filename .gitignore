@@ -1,2 +1,10 @@
 # Superpowers internals — never version-controlled
 docs/superpowers/
+
+# Playwright MCP session artifacts (screenshots, traces)
+.playwright-mcp/
+
+# Python
+__pycache__/
+*.pyc
+uv.lock
