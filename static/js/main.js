@@ -1,6 +1,7 @@
 import { Solver } from './solver.js';
 import { Renderer } from './renderer.js';
 import { Interaction } from './interaction.js';
+import { UI } from './ui.js';
 import { STAMPS } from './stamps.js';
 
 async function init() {
@@ -31,6 +32,7 @@ async function init() {
     const solver = await Solver.create(device, numX, numY);
     const renderer = new Renderer(container, device, solver);
     const interaction = new Interaction(renderer.canvas, solver);
+    const ui = new UI(solver, renderer, interaction);
 
     // Temporary keyboard wiring (removed when UI is wired in Task 11)
     document.addEventListener('keydown', (e) => {

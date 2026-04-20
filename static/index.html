@@ -17,7 +17,25 @@
         </header>
         <main>
             <div id="canvas-container"></div>
-            <aside id="sidebar"></aside>
+            <aside id="sidebar">
+            <section class="panel" id="panel-rule">
+                <h2>Rule</h2>
+                <label for="rule-named">Named rule</label>
+                <select id="rule-named">
+                    <!-- Populated by ui.js from NAMED_RULES -->
+                </select>
+                <div class="rule-grid">
+                    <div class="rule-row">
+                        <span class="rule-row-label">Born</span>
+                        <span class="rule-checks" id="rule-b-checks"><!-- 9 checkboxes --></span>
+                    </div>
+                    <div class="rule-row">
+                        <span class="rule-row-label">Survive</span>
+                        <span class="rule-checks" id="rule-s-checks"><!-- 9 checkboxes --></span>
+                    </div>
+                </div>
+            </section>
+        </aside>
         </main>
     </div>
     <script type="module" src="/js/main.js"></script>
