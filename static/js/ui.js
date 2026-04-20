@@ -1,4 +1,6 @@
 import { NAMED_RULES, pack, matchNamed } from './rules.js';
+import { PRESETS, PRESET_ORDER } from './presets.js';
+import { STAMPS, STAMP_CATEGORIES } from './stamps.js';
 
 export class UI {
     constructor(solver, renderer, interaction) {
@@ -6,9 +8,20 @@ export class UI {
         this.renderer = renderer;
         this.interaction = interaction;
 
+        this.currentPreset = 'soup30';
+        this.substepsPerFrame = 2;
+        this.generation = 0;
+
         this._buildRuleEditor();
         this._syncRuleUiFromSolver();
+        this._buildScenes();
+        this._buildStamps();
+        this._bindPlayback();
+        this._bindGrid();
+        this._bindDisplay();
     }
+
+    // ---- Rule Editor ----
 
     _buildRuleEditor() {
         const sel = document.getElementById('rule-named');
@@ -25,7 +38,7 @@ export class UI {
 
         sel.addEventListener('change', () => {
             const key = sel.value;
-            if (key === '__custom') return;  // User must toggle a checkbox to leave Custom
+            if (key === '__custom') return;
             const { bMask, sMask } = pack(NAMED_RULES[key]);
             this.solver.setParams({ birthMask: bMask, survivalMask: sMask });
             this._syncCheckboxesFromMasks(bMask, sMask);
@@ -45,8 +58,6 @@ export class UI {
         const cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.id = `rule-${kind}-${n}`;
-        cb.dataset.kind = kind;
-        cb.dataset.n = String(n);
         cb.addEventListener('change', () => this._onCheckboxToggle());
         const lbl = document.createElement('span');
         lbl.textContent = String(n);
@@ -78,5 +89,154 @@ export class UI {
         this._syncCheckboxesFromMasks(birthMask, survivalMask);
         const match = matchNamed({ bMask: birthMask, sMask: survivalMask });
         document.getElementById('rule-named').value = match || '__custom';
+    }
+
+    // ---- Scene Presets ----
+
+    _buildScenes() {
+        const host = document.getElementById('scene-buttons');
+        for (const key of PRESET_ORDER) {
+            const btn = document.createElement('button');
+            btn.textContent = PRESETS[key].name;
+            btn.dataset.preset = key;
+            if (key === this.currentPreset) btn.classList.add('active');
+            btn.addEventListener('click', () => this._applyScene(key));
+            host.appendChild(btn);
+        }
+    }
+
+    _applyScene(key) {
+        this.currentPreset = key;
+        document.querySelectorAll('#scene-buttons button').forEach(b => b.classList.remove('active'));
+        document.querySelector(`#scene-buttons button[data-preset="${key}"]`).classList.add('active');
+        const field = PRESETS[key].seedFn(this.solver.numX, this.solver.numY);
+        this.solver.seedField(field);
+        this.generation = 0;
+        this._updateGenCounter();
+    }
+
+    // ---- Stamps ----
+
+    _buildStamps() {
+        const sel = document.getElementById('stamp-select');
+        for (const cat of STAMP_CATEGORIES) {
+            const group = document.createElement('optgroup');
+            group.label = cat;
+            for (const [key, stamp] of Object.entries(STAMPS)) {
+                if (stamp.category !== cat) continue;
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = stamp.name;
+                group.appendChild(opt);
+            }
+            sel.appendChild(group);
+        }
+        sel.value = 'glider';
+        this.interaction.activeStamp = 'glider';
+        sel.addEventListener('change', () => {
+            this.interaction.activeStamp = sel.value;
+        });
+
+        const brushBtn = document.getElementById('btn-mode-brush');
+        const stampBtn = document.getElementById('btn-mode-stamp');
+        const setMode = (mode) => {
+            this.interaction.mode = mode;
+            brushBtn.classList.toggle('mode-active', mode === 'brush');
+            stampBtn.classList.toggle('mode-active', mode === 'stamp');
+        };
+        brushBtn.addEventListener('click', () => setMode('brush'));
+        stampBtn.addEventListener('click', () => setMode('stamp'));
+    }
+
+    // ---- Playback ----
+
+    _bindPlayback() {
+        const btnPlay  = document.getElementById('btn-play');
+        const btnStep  = document.getElementById('btn-step');
+        const btnReset = document.getElementById('btn-reset');
+        const btnClear = document.getElementById('btn-clear');
+
+        this._togglePause = () => {
+            this.solver.paused = !this.solver.paused;
+            btnPlay.textContent = this.solver.paused ? '▶ Play' : '⏸ Pause';
+        };
+        this._stepOnce = () => {
+            if (this.solver.paused) {
+                this.solver.step(this.substepsPerFrame);
+                this.generation += this.substepsPerFrame;
+                this._updateGenCounter();
+            }
+        };
+        this._reset = () => {
+            this._applyScene(this.currentPreset);
+        };
+        this._clear = () => {
+            const blank = new Int32Array(this.solver.numX * this.solver.numY);
+            this.solver.seedField(blank);
+            this.generation = 0;
+            this._updateGenCounter();
+        };
+
+        btnPlay.addEventListener('click', this._togglePause);
+        btnStep.addEventListener('click', this._stepOnce);
+        btnReset.addEventListener('click', this._reset);
+        btnClear.addEventListener('click', this._clear);
+    }
+
+    _updateGenCounter() {
+        document.getElementById('gen-counter').textContent = String(this.generation);
+    }
+
+    tickGenCounter() {
+        if (!this.solver.paused) {
+            this.generation += this.substepsPerFrame;
+            this._updateGenCounter();
+        }
+    }
+
+    // ---- Grid ----
+
+    _bindGrid() {
+        document.querySelectorAll('[data-res]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const numY = parseInt(btn.dataset.res, 10);
+                const container = document.getElementById('canvas-container');
+                const aspectRatio = container.clientWidth / container.clientHeight;
+                const numX = Math.max(8, Math.round(numY * aspectRatio / 8) * 8);
+                this.solver.resize(numX, numY);
+                this.renderer.resize(numX, numY);
+                this._applyScene(this.currentPreset);
+                document.querySelectorAll('[data-res]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        const boundarySel = document.getElementById('boundary-select');
+        boundarySel.value = String(this.solver.params.boundary);
+        boundarySel.addEventListener('change', () => {
+            this.solver.setParams({ boundary: parseInt(boundarySel.value, 10) });
+        });
+    }
+
+    // ---- Display ----
+
+    _bindDisplay() {
+        const brush = document.getElementById('slider-brush');
+        brush.addEventListener('input', () => {
+            this.interaction.brushRadius = parseInt(brush.value, 10);
+            document.getElementById('val-brush').textContent = brush.value;
+        });
+
+        const age = document.getElementById('slider-age');
+        age.addEventListener('input', () => {
+            this.renderer.ageSoftCap = parseInt(age.value, 10);
+            document.getElementById('val-age').textContent = age.value;
+        });
+
+        const sub = document.getElementById('slider-substeps');
+        sub.addEventListener('input', () => {
+            this.substepsPerFrame = parseInt(sub.value, 10);
+            document.getElementById('val-substeps').textContent = sub.value;
+        });
     }
 }

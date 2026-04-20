@@ -35,6 +35,56 @@
                     </div>
                 </div>
             </section>
+
+    <section class="panel" id="panel-scenes">
+        <h2>Scene</h2>
+        <div id="scene-buttons" class="btn-grid"><!-- populated by ui.js --></div>
+    </section>
+
+    <section class="panel" id="panel-playback">
+        <h2>Simulation</h2>
+        <div class="btn-row">
+            <button id="btn-play">⏸ Pause</button>
+            <button id="btn-step">Step</button>
+            <button id="btn-reset">Reset</button>
+            <button id="btn-clear">Clear</button>
+        </div>
+        <div class="hud-line"><span>Generation:</span> <span id="gen-counter">0</span></div>
+    </section>
+
+    <section class="panel" id="panel-stamps">
+        <h2>Stamps</h2>
+        <div class="btn-row">
+            <button id="btn-mode-brush" class="mode-active">Brush</button>
+            <button id="btn-mode-stamp">Stamp</button>
+        </div>
+        <label for="stamp-select">Active stamp</label>
+        <select id="stamp-select"><!-- populated by ui.js --></select>
+    </section>
+
+    <section class="panel" id="panel-grid">
+        <h2>Grid</h2>
+        <div class="btn-row">
+            <button data-res="512" class="active">512</button>
+            <button data-res="1024">1024</button>
+            <button data-res="2048">2048</button>
+        </div>
+        <label for="boundary-select">Boundary</label>
+        <select id="boundary-select">
+            <option value="0">Periodic (wrap)</option>
+            <option value="1">Dead border</option>
+        </select>
+    </section>
+
+    <section class="panel" id="panel-display">
+        <h2>Display</h2>
+        <label>Brush radius: <span id="val-brush">5</span></label>
+        <input type="range" id="slider-brush" min="1" max="30" value="5">
+        <label>Age soft cap: <span id="val-age">16</span></label>
+        <input type="range" id="slider-age" min="1" max="64" value="16">
+        <label>Generations / frame: <span id="val-substeps">2</span></label>
+        <input type="range" id="slider-substeps" min="1" max="60" value="2">
+    </section>
         </aside>
         </main>
     </div>
