@@ -55,6 +55,8 @@ main { flex: 1; display: flex; overflow: hidden; }
     background: rgba(0,0,0,0.4); padding: 0.4rem 0.6rem; border-radius: 3px;
     z-index: 50;
 }
+/* Hide HUD while the welcome overlay is showing */
+body:has(#welcome-overlay:not(.welcome-hidden)) #perf-hud { display: none; }
 
 /* Welcome overlay */
 #welcome-overlay {

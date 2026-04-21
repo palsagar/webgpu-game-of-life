@@ -28,7 +28,10 @@ async function init() {
     });
 
     const overlay = document.getElementById('welcome-overlay');
+    let welcomeDismissed = false;
     const dismissWelcome = () => {
+        if (welcomeDismissed) return;
+        welcomeDismissed = true;
         overlay.classList.add('welcome-hidden');
         overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
     };

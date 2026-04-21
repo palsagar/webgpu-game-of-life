@@ -26,7 +26,7 @@ export class Renderer {
         this._canvas.style.objectFit = 'contain';
         container.appendChild(this._canvas);
 
-        this._ctx = this._canvas.getContext('2d');
+        this._ctx = this._canvas.getContext('2d', { alpha: false });
         this._imageData = this._ctx.createImageData(this.numX, this.numY);
 
         this._stagingBuffer = this._createStagingBuffer();
