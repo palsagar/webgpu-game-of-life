@@ -8,3 +8,6 @@ docs/superpowers/
 __pycache__/
 *.pyc
 uv.lock
+
+# Stray test screenshots at repo root
+/*.png
