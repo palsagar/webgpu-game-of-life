@@ -14,10 +14,16 @@ export class Renderer {
         this._canvas = document.createElement('canvas');
         this._canvas.width = this.numX;
         this._canvas.height = this.numY;
-        this._canvas.style.width = '100%';
-        this._canvas.style.height = '100%';
+        // Preserve aspect ratio so mouse coords in screenToSim map to the right cell
+        // regardless of window size. object-fit: contain lets the canvas keep its
+        // native numX:numY ratio inside the container.
+        this._canvas.style.maxWidth = '100%';
+        this._canvas.style.maxHeight = '100%';
+        this._canvas.style.width = 'auto';
+        this._canvas.style.height = 'auto';
         this._canvas.style.display = 'block';
         this._canvas.style.imageRendering = 'pixelated';
+        this._canvas.style.objectFit = 'contain';
         container.appendChild(this._canvas);
 
         this._ctx = this._canvas.getContext('2d');
