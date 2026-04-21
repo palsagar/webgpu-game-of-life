@@ -39,6 +39,7 @@ export class Renderer {
 
     async _loadColormap() {
         const resp = await fetch('/colormaps/viridis.png');
+        if (!resp.ok) { console.error('Failed to load colormap:', resp.status); return; }
         const blob = await resp.blob();
         const bitmap = await createImageBitmap(blob);
         const offscreen = document.createElement('canvas');
@@ -110,6 +111,12 @@ export class Renderer {
     }
 
     resize(numX, numY) {
+        // Guard against destroying a buffer while a map is in flight.
+        // If a readback is pending, try to cancel it first.
+        if (this.readbackPending) {
+            try { this._stagingBuffer.unmap(); } catch { /* map hadn't resolved yet */ }
+            this.readbackPending = false;
+        }
         this._stagingBuffer.destroy();
         this.numX = numX;
         this.numY = numY;

@@ -18,7 +18,7 @@ async function init() {
     }
     const device = await adapter.requestDevice();
 
-    const info = adapter.info;
+    const info = adapter.info ?? {};
     const name = info.device || info.description
         || [info.vendor, info.architecture].filter(Boolean).join(' ') || 'Unknown GPU';
     document.getElementById('gpu-adapter-name').textContent = name;
@@ -83,4 +83,8 @@ async function init() {
     requestAnimationFrame(frame);
 }
 
-init();
+init().catch((err) => {
+    console.error('Initialization failed:', err);
+    document.getElementById('no-webgpu').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+});

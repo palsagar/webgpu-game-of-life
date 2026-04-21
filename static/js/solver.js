@@ -59,7 +59,9 @@ export class Solver {
     static async create(device, numX, numY) {
         const solver = new Solver(device, numX, numY);
 
-        const wgsl = await fetch('/shaders/life.wgsl').then(r => r.text());
+        const resp = await fetch('/shaders/life.wgsl');
+        if (!resp.ok) throw new Error(`Failed to load shader: ${resp.status}`);
+        const wgsl = await resp.text();
         const module = device.createShaderModule({ code: wgsl });
 
         const bglEntry = (binding, type) => ({
